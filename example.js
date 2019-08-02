@@ -71,7 +71,7 @@ const PERIODS = {
 
 
 @inject('rootStore') @observer
-export default class DQKpi extends React.Component {
+export default class Kpi extends React.Component {
     acceptanceLevel = ['100-95%', '94-90%', '89-80%', '<80%'];
     acceptanceLevelData = [[100, 95], [95, 90], [90, 80], [80, 0]];
 
