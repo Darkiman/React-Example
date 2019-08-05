@@ -182,11 +182,11 @@ export default class Kpi extends React.Component {
 
     getFilteredDataForActualVsKpi() {
         let result = [];
-
-        if (this.state.selectedDataSource && this.state.selectedDataSource.length > 0) {
+        const {selectedDataSource} = this.state;
+        if (selectedDataSource && selectedDataSource.length > 0) {
             for (const row of this.store.jobResult) {
                 if (this.usingDimensions.includes(row['Dimension']) && this.usingPolicies.includes(row['Policy']) &&
-                    this.state.selectedDataSource.includes(row['Data Source']) && this.startDateFromPeriod.isBefore(moment(row['Date'], this.dateFormat))) {
+                    selectedDataSource.includes(row['Data Source']) && this.startDateFromPeriod.isBefore(moment(row['Date'], this.dateFormat))) {
                     result.push(row);
                 }
             }
@@ -295,27 +295,28 @@ export default class Kpi extends React.Component {
 
     getDataSourcesByDimensionsAndPolicies(selectedDimension, selectedPolicy) {
         let result = [];
-        if (!this.store.jobResult || !this.store.jobResult[0]) {
+        const {jobResult} = this.store;
+        if (!jobResult || !jobResult[0]) {
             return result;
         }
         if (selectedDimension === 'All' && selectedPolicy === 'All') {
-            for (let row of this.store.jobResult) {
+            for (let row of jobResult) {
                 result.push(row['Data Source']);
             }
         } else if (selectedDimension === 'All' && selectedPolicy !== 'All') {
-            for (let row of this.store.jobResult) {
+            for (let row of jobResult) {
                 if (row['Policy'] === selectedPolicy) {
                     result.push(row['Data Source']);
                 }
             }
         } else if (selectedDimension !== 'All' && selectedPolicy == 'All') {
-            for (let row of this.store.jobResult) {
+            for (let row of jobResult) {
                 if (row['Dimension'] === selectedDimension) {
                     result.push(row['Data Source']);
                 }
             }
         } else if (selectedDimension !== 'All' && selectedPolicy !== 'All') {
-            for (let row of this.store.jobResult) {
+            for (let row of jobResult) {
                 if (row['Dimension'] === selectedDimension && row['Policy'] === selectedPolicy) {
                     result.push(row['Data Source']);
                 }
@@ -331,9 +332,10 @@ export default class Kpi extends React.Component {
 
     getChartData() {
         const result = [];
-        if (this.state.selectedDataSource) {
+        const {selectedDataSource} = this.state;
+        if (selectedDataSource) {
             const job = this.store.jobResult;
-            this.state.selectedDataSource.map(item => {
+            selectedDataSource.map(item => {
                 let data = job.filter(row => this.usingDimensions.includes(row['Dimension']) && this.usingPolicies.includes(row['Policy']) &&
                     row['Data Source'] === item && this.startDateFromPeriod.isBefore(moment(row['Date'], this.dateFormat)));
                 if (data && data.length > 0) {
@@ -421,9 +423,10 @@ export default class Kpi extends React.Component {
         let result = [];
 
         let keys = Object.keys(this.state.chartSelections);
-        if (keys && keys[0] && !this.state.chartSelections[keys[0]].onSelectAction) {
-            let left = this.state.chartSelections[keys[0]].refAreaLeft;
-            let right = this.state.chartSelections[keys[0]].refAreaRight;
+        const firstKeyValue = this.state.chartSelections[keys[0]];
+        if (keys && keys[0] && !firstKeyValue.onSelectAction) {
+            let left = firstKeyValue.refAreaLeft;
+            let right = firstKeyValue.refAreaRight;
             if (!left || !right) {
                 return this.store.jobResult.filter(item => item['Data Source'] === keys[0]);
             }
@@ -445,8 +448,9 @@ export default class Kpi extends React.Component {
 
     getFieldsByDimensionsColumns(fieldsByDimensionDataFiltered) {
         let result = [];
-        if (this.store.jobResult && this.store.jobResult[0]) {
-            for (let key of Object.keys(this.store.jobResult[0])) {
+        const {jobResult} = this.store;
+        if (jobResult && jobResult[0]) {
+            for (let key of Object.keys(jobResult[0])) {
                 result.push({
                     Header: key,
                     accessor: key,
@@ -515,8 +519,10 @@ export default class Kpi extends React.Component {
     }
 
     isShowSelectedArea(item) {
-        return this.state.chartSelections[item.title] && this.state.chartSelections[item.title].refAreaLeft &&
-            this.state.chartSelections[item.title].refAreaRight;
+        const {chartSelections} = this.state;
+        const {title} = item;
+        return chartSelections[title] && chartSelections[title].refAreaLeft &&
+            chartSelections[title].refAreaRight;
     }
 
     getLinesFromChartData(data) {
